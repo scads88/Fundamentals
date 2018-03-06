@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Mar  6 16:18:35 2018
+Created on Tue Mar  6 17:19:22 2018
 
 @author: john3
 """
@@ -14,16 +14,35 @@ import bs4 as bs
 import pickle
 from collections import OrderedDict
 
+
+
+
+def save_sp500_tickers_TOOL():
+    resp=requests.get("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies")
+    soup=bs.BeautifulSoup(resp.text, "lxml")
+    table=soup.find('table', {"class":"wikitable sortable"})
+    tickers=[]
+    for row in table.findAll("tr")[1:]:
+        ticker=row.findAll('td')[0].text
+        tickers.append(ticker)
+    return tickers
+
+
+totaltickers=save_sp500_tickers_TOOL()[:10]
+
+
+#if changing total tickers make sure to delete pickle file
+
+
+
 #Here we populate our list with desired tickers
-totaltickers=["AAPL", "snn", "ptct"]
-filename="hybridization2"
+#totaltickers=["AAPL", "snn", "ptct"]
+filename="hybridization3"
 picklefilename=filename+".pickle"
 totaltickers=[ticker.replace(ticker, ticker.lower()) for ticker in totaltickers]
 
 dowehaveapickle=os.path.isfile(picklefilename)
 print(os.path.abspath(picklefilename))
-
-
 
 tickerurldict={}
 tickersoupdict={}
