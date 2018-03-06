@@ -30,6 +30,14 @@ totaltickers=["AAPL", "snn", "ptct"]
 filename="hybridization"
 totaltickers=[ticker.replace(ticker, ticker.lower()) for ticker in totaltickers]
 
+
+
+
+
+
+
+
+
 tickerurldict={}
 tickersoupdict={}
 tickerlabelratiodict={}
@@ -46,3 +54,4 @@ df=pd.DataFrame.from_dict(tickerlabelratiodict, orient="columns")
 #putpicklehere
 df.to_csv(filename+".csv")
 print(df)  
+
