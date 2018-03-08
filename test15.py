@@ -6,11 +6,46 @@ Created on Tue Mar  6 23:27:30 2018
 """
 
 import bs4 as bs
-import pandas as pd
 import requests
+import datetime as dt
+import matplotlib.pyplot as plt
+from matplotlib import style
+import pandas as pd
+import pandas_datareader.data as web
 
 
-resp=requests.get("https://www.marketwatch.com/investing/stock/snn/financials")
+
+style.use("ggplot")
+start=dt.datetime(2000, 1, 1)
+end=dt.datetime(2017, 12, 31)
+ 
+df=web.DataReader("AAPL", "google", start, end)
+
+print(df.tail())
+ #attribute of all dataframe objects and got a name and file extension
+#df.to_csv("tsla.csv")
+"""
+df=pd.read_csv("tsla.csv", parse_dates=True, index_col=0)
+print(df.head())
+# =============================================================================
+df.plot()
+plt.show()
+df["Close"].plot()
+plt.show()
+print (df[["Open", "High"]].head())
+"""
+
+
+
+
+
+
+
+
+
+
+
+resp=requests.get("https://www.marketwatch.com/investing/stock/aapl/financials")
 soup=bs.BeautifulSoup(resp.text, "lxml")
 table = soup.find_all("td", class_="rowTitle")
 rows=list()
@@ -22,12 +57,15 @@ for row in table:
 labels.pop(0)
 labels.pop(11)
 #######################################################
+##need to format values so that () goes to neg, M to million, B to billion
 fucktable=list(sorted(set([e.get_text().strip() for e in soup.select("th")]))) #generates list with years, etc, redundancy; kills redundant; organizes; turns into list; forces to vbl, gets rid blank
 fucktable.pop(0)
 theyears=fucktable[:5]
 #print(theyears)
 
 #####should go through here and try to condense
+
+
 
 
 values2013=values[::5]

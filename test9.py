@@ -28,7 +28,7 @@ def save_sp500_tickers_TOOL():
     return tickers
 
 
-totaltickers=save_sp500_tickers_TOOL()[:10]
+totaltickers=save_sp500_tickers_TOOL()[:5]
 
 
 #if changing total tickers make sure to delete pickle file
