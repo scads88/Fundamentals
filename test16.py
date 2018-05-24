@@ -9,6 +9,9 @@ Created on Wed Mar  7 19:16:09 2018
 #will automatically trigger the generation of reports and ratios for the
 #companies at hand
 
+
+#also make sure to print the percentage change that triggered the event
+import re
 import bs4 as bs
 import pandas as pd
 import requests
@@ -116,8 +119,30 @@ labelsvalueslast5years=[]
 #print(values2017)
 #print(values2016)
 
+###testloop
+#percentages, millions, billion, )(, decimals
+valuesX=[]
+#values2016= [w.replace('B', "000000000") for w in values2016]
+#values2016=[w.replace("M", "000000") for w in values2016]
+# =============================================================================
+# 
+# for i in values2016:
+#     for j in i:
+#         if "B" in j:
+#             values2016=[i.replace(".", "6969") for i in values2016]
+#             valuesX.append(i)
+#         else:
+#             valuesX.append(i)
+# =============================================================================
+#print(values2016)
+#for w in values2016:
+    #float(w.replace("M", ""))*1000000
+#for i in values2016:
+    #for re.findall(r"B", i):
+        
 
-
+print(values2016)    
+print(valuesX)   
 labelsvalues2013dict={}
 for label, value in zip(labels, values2013):
     labelsvalues2013dict[label]=value

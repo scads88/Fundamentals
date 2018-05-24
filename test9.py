@@ -13,7 +13,7 @@ import requests
 import bs4 as bs
 import pickle
 from collections import OrderedDict
-
+import datetime
 
 
 
@@ -28,16 +28,15 @@ def save_sp500_tickers_TOOL():
     return tickers
 
 
-totaltickers=save_sp500_tickers_TOOL()[:5]
+#totaltickers=save_sp500_tickers_TOOL()[:5]
 
 
 #if changing total tickers make sure to delete pickle file
-
-
+totaltickers=["OPK", "MYGN", "LH", "DGX", "NVTA"]
 
 #Here we populate our list with desired tickers
 #totaltickers=["AAPL", "snn", "ptct"]
-filename="hybridization3"
+filename="PublicInvitaeCompetitorComparison4PatShort"
 picklefilename=filename+".pickle"
 totaltickers=[ticker.replace(ticker, ticker.lower()) for ticker in totaltickers]
 
@@ -48,6 +47,8 @@ tickerurldict={}
 tickersoupdict={}
 tickerlabelratiodict={}
 numberasindexdict={}
+
+
 for ticker in totaltickers:
     if dowehaveapickle==True:
         with open(picklefilename, "rb") as f: #roughly copypasted from function above, but not write bites wb, you read bytes rb
@@ -55,6 +56,8 @@ for ticker in totaltickers:
 
 
     else:
+        
+    
         americaurl="https://www.marketwatch.com/investing/stock/" + ticker + "/profile" #creates the url template for usa stock ticker designation
         resp=requests.get(americaurl) # requests the info on americaurl and sends it to response variable
         soup3=bs.BeautifulSoup(resp.text, "lxml")# turns the resp variable into a soup
@@ -71,4 +74,3 @@ for ticker in totaltickers:
 #putpicklehere
 df.to_csv(filename+".csv")
 print(df)  
-print("poop")
