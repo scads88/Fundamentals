@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon May 28 09:03:54 2018
+Created on Mon May 28 13:41:55 2018
 
 @author: john3
 """
+
 import re
 import bs4 as bs
 import pandas as pd
@@ -18,6 +19,8 @@ import numpy as np
 from collections import OrderedDict
 import alpha_vantage
 from alpha_vantage.timeseries import TimeSeries
+
+
 
 
 
@@ -77,7 +80,7 @@ for i in tickerbox:
     #df=web.DataReader(tickername, "google", start, end)
     df["HL_PCT"]=(df["2. high"]-df["3. low"])/df["3. low"]*100.0
     df["PCT_change"]=(df["5. adjusted close"]-df["1. open"])/df["1. open"]*100.0
-    print(df.head())
+    #print(df.head())
 
 ###could also have a nltk filter up here as well
 #filter for generate reports
@@ -103,15 +106,21 @@ for i in tickerbox:
     fucktable.pop(0)
     theyears=fucktable[:5]
     #print(theyears)
+    #totalvalues=[]
     values2013=values[::5]
+    #totalvalues.append(values2013)
     values2014=values[1::5]
+    #totalvalues.append(values2014)
     values2015=values[2::5]
+    #totalvalues.append(values2015)
     values2016=values[3::5]
+    #totalvalues.append(values2016)
     values2017=values[4::5]
+    #totalvalues.append(values2017)
 
     labelsvalueslast5years=[]
 
-    print(values2016)
+    #print(values2016)
     labelsvalues2013dict={}
     for label, value in zip(labels, values2013):
         labelsvalues2013dict[label]=value
@@ -147,22 +156,62 @@ for i in tickerbox:
     years2labelsvaluesdict2=years2labelsvaluesdict.values()
     dfx=pd.DataFrame.from_dict(years2labelsvaluesdict)# dictionary turned into a pandas dataframe
     #could be a good place to start replacement loop
-    print (dfx["2013"].head())
     #break
-    
-    for year in theyears:
-        """
+    print(dfx["2017"].head(-5))
+    percentlabels=[]
+    for year in theyears: 
         for label in labels:
+            dfx[year][label]=dfx[year][label].replace(",", "")
+            dfx[year][label]=dfx[year][label].replace(")", "").replace("(", "-")
+            if "-" in dfx[year][label] and len(dfx[year][label])==1:
+               dfx[year][label]= dfx[year][label].replace("-", "NAN")
+                
+            if "%" in dfx[year][label]:
+                dfx[year][label]=dfx[year][label].replace("%", "") #fixes percentages
+                percentlabels.append(label)            
+                dfx[year][label]=str((float(dfx[year][label])*0.01))
+            print(dfx[year][label])#do stuff about percentlabels here too
+        #dfx[year] = dfx[year].apply(value_to_float) #fixes lotsa stuff
+    for year in theyears:
+        for label in labels:
+            dfx[year][label]=str(dfx[year][label])
+            #print(dfx["2017"].head(-5))
             if "M" in dfx[year][label]:
-                dfx[year]=dfx[year].apply(lambda x: re.sub('M','000000',x))
-                dfx[year]=dfx[year].apply(lambda x: re.sub(".", ";", x))
-                """
-        dfx[year] = dfx[year].apply(value_to_float)
-        #dfx[year]=dfx[year].apply(negmod)
-    print(dfx["2017"])
-    print(type(dfx["2017"]["Income Tax - Current Domestic"]))
+                dfx[year][label]=dfx[year][label].replace("M", "")
+                dfx[year][label]=str(int(float(dfx[year][label])*1000000))
+            if "B" in dfx[year][label]:
+                dfx[year][label]=dfx[year][label].replace("B", "")
+                dfx[year][label]=int(float(dfx[year][label])*1000000000)
+
+        
+    percentlabels=set(percentlabels)
+    for g in percentlabels:
+        if g in labels:
+            dfx=dfx.rename(index={g:g+"( % )"})
+    for stuff in labels:
+        if stuff not in percentlabels:
+            dfx=dfx.rename(index={stuff:stuff+" ( $ ) "}) #legal tender, come back to deal with pounds
+    
     #break
     #dfx.to_csv("ass"+i+".csv")
+    print(dfx["2017"])
     print("poop")
     break
 print("finalpoop")
+
+
+
+
+
+"""   
+    for year in theyears: 
+        for label in labels:
+            for percentlabel in percentlabels:
+                for percentlabel in labels:
+                    print (percentlabel)
+                    dfx[year][label]=dfx[year][percentlabel+"(%)"]
+                    
+                    #print(dfx[year][percentlabel])
+            else:
+                print ("nope")
+"""        
