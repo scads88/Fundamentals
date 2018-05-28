@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sat May 26 17:30:58 2018
+Created on Mon May 28 09:03:54 2018
 
 @author: john3
 """
-
-
-        
+import re
 import bs4 as bs
 import pandas as pd
 import requests
@@ -22,6 +20,42 @@ import alpha_vantage
 from alpha_vantage.timeseries import TimeSeries
 
 
+
+
+def value_to_float(x):
+    if type(x) == float or type(x) == int:
+        return x
+    if "(" and ")" in x:
+        if len(x)> 1:
+          return x.replace(")","").replace("(", "-")
+    if "," in x:
+        if len(x)>1:
+            return x.replace(",", "")
+    if "-" and "M" in x:
+        if len(x)> 1:
+            return float(x.replace("M", ""))*100000
+    if "-" in x:
+        if len(x)==1:
+            return x.replace("-","NAN")
+    
+    if 'K' in x:
+        if len(x) > 1:
+            return float(x.replace('K', '')) * 1000
+        return 1000.0
+    
+    if 'M' in x:
+        if len(x) > 1:
+            return float(x.replace('M', '')) * 1000000
+        return 1000000.0
+    if 'B' in x:
+        return float(x.replace('B', '')) * 1000000000
+    return 0.0
+
+def negmod(x):
+    if type(x)==type(str(x)):
+        if 'M' and "-" in x:
+            if len(x) > 1:
+                return str(float(x.replace('M', '')) * 1000000)
 gonogo="pass"
 AVkey="E82V6HPLXDMUN5TM"
 tickerbox=["OPK", "DGX", "NVTA", "LH"]
@@ -63,11 +97,12 @@ for i in tickerbox:
 ####these are sensitive be care if fuck with them####
     labels.pop(0)
     labels.pop(11)
+    #print(labels)
 #######################################################
     fucktable=list(sorted(set([e.get_text().strip() for e in soup.select("th")]))) #generates list with years, etc, redundancy; kills redundant; organizes; turns into list; forces to vbl, gets rid blank
     fucktable.pop(0)
     theyears=fucktable[:5]
-
+    #print(theyears)
     values2013=values[::5]
     values2014=values[1::5]
     values2015=values[2::5]
@@ -113,7 +148,21 @@ for i in tickerbox:
     dfx=pd.DataFrame.from_dict(years2labelsvaluesdict)# dictionary turned into a pandas dataframe
     #could be a good place to start replacement loop
     print (dfx["2013"].head())
-    break
-    dfx.to_csv("ass"+i+".csv")
+    #break
+    
+    for year in theyears:
+        """
+        for label in labels:
+            if "M" in dfx[year][label]:
+                dfx[year]=dfx[year].apply(lambda x: re.sub('M','000000',x))
+                dfx[year]=dfx[year].apply(lambda x: re.sub(".", ";", x))
+                """
+        dfx[year] = dfx[year].apply(value_to_float)
+        #dfx[year]=dfx[year].apply(negmod)
+    print(dfx["2017"])
+    print(type(dfx["2017"]["Income Tax - Current Domestic"]))
+    #break
+    #dfx.to_csv("ass"+i+".csv")
     print("poop")
+    break
 print("finalpoop")
